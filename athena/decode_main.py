@@ -24,13 +24,13 @@ from absl import logging
 from athena import DecoderSolver
 from athena.main import (
     parse_config,
-    load_model_from_jsonfile
+    build_model_from_jsonfile
 )
 
 
 def decode(jsonfile):
     """ entry point for model decoding, do some preparation work """
-    p, model, _, checkpointer, dataset_builder = load_model_from_jsonfile(jsonfile, 0)
+    p, model, _, checkpointer, dataset_builder = build_model_from_jsonfile(jsonfile, 0)
     checkpointer.restore_from_best()
     solver = DecoderSolver(model, config=p.decode_config)
     dataset_builder = dataset_builder.load_csv(p.test_csv).compute_cmvn_if_necessary(True)

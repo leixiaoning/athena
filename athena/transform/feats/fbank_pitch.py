@@ -158,6 +158,7 @@ class FbankPitch(BaseFrontend):
       fbank_feats = tf.squeeze(self.fbank(audio_data, sample_rate))
       pitch_feats = tf.squeeze(self.pitch(audio_data, sample_rate))
       fbank_pitch_feats = tf.concat([fbank_feats, pitch_feats], 1)
+      fbank_pitch_feats = tf.expand_dims(fbank_pitch_feats, 2)
 
       return fbank_pitch_feats
 

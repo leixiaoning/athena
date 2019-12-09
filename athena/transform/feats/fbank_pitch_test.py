@@ -35,11 +35,11 @@ class FbankPitchTest(tf.test.TestCase):
       fbank_pitch_test = fbank_pitch(input_data, sample_rate)
 
       if tf.executing_eagerly():
-        self.assertEqual(tf.rank(fbank_pitch_test).numpy(), 2)
-        print(fbank_pitch_test.numpy()[0:2])
+        self.assertEqual(tf.rank(fbank_pitch_test).numpy(), 3)
+        print(fbank_pitch_test.numpy()[0:2, :, 0])
       else:
-        self.assertEqual(tf.rank(fbank_pitch_test).eval(), 2)
-        print(fbank_pitch_test.eval()[0:2])
+        self.assertEqual(tf.rank(fbank_pitch_test).eval(), 3)
+        print(fbank_pitch_test.eval()[0:2, :, 0])
 
 if __name__ == '__main__':
 

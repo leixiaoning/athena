@@ -144,3 +144,10 @@ def splice_numpy(x, context):
     spliced = np.concatenate([i[:, :, np.newaxis, :] for i in array], axis=2)
     spliced = np.reshape(spliced, (B, T, -1))
     return tf.convert_to_tensor(spliced)
+
+def set_default_summary_writer(summary_directory=None):
+    if summary_directory is None:
+        summary_directory = os.path.join(os.path.expanduser("~"), ".athena")
+        summary_directory = os.path.join(summary_directory, "event")
+    writer = tf.summary.create_file_writer(summary_directory)
+    writer.set_as_default()

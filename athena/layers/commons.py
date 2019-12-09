@@ -100,7 +100,7 @@ SUPPORTED_RNNS = {
 }
 
 ACTIVATIONS = {
-    "rele": tf.nn.relu,
+    "relu": tf.nn.relu,
     "relu6": tf.nn.relu6,
     "elu": tf.nn.elu,
     "selu": tf.nn.selu,

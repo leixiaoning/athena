@@ -28,6 +28,7 @@ from athena import BaseSolver
 from athena import WarmUpAdam
 from athena import ExponentialDecayAdam
 from athena import Checkpoint
+from athena import set_default_summary_writer
 from athena import (
     DeepSpeechModel,
     SpeechTransformer,
@@ -91,7 +92,7 @@ def parse_config(config=None):
     return hparams
 
 
-def load_model_from_jsonfile(jsonfile, rank=0, pre_run=True):
+def build_model_from_jsonfile(jsonfile, rank=0, pre_run=True):
     """ creates model using configurations in json, load from checkpoint
     if previous models exist in checkpoint dir
     """
@@ -112,8 +113,6 @@ def load_model_from_jsonfile(jsonfile, rank=0, pre_run=True):
     optimizer = SUPPORTED_OPTIMIZER[p.optimizer](p.optimizer_config)
     checkpointer = Checkpoint(
         checkpoint_directory=p.ckpt,
-        summary_directory=p.summary_dir,
-        rank=rank,
         model=model,
         optimizer=optimizer,
     )
@@ -128,6 +127,8 @@ def load_model_from_jsonfile(jsonfile, rank=0, pre_run=True):
             raise ValueError("we currently need a dev_csv for pre-load")
         dataset = dataset_builder.load_csv(p.dev_csv).as_dataset(p.batch_size)
         solver.evaluate_step(iter(dataset).next())
+    if rank == 0:
+        set_default_summary_writer(p.summary_dir)
     return p, model, optimizer, checkpointer, dataset_builder
 
 
@@ -140,10 +141,10 @@ def train(jsonfile, Solver, rank_size=1, rank=0):
 	:param rank: rank of current worker, 0 if using single gpu
 	"""
     p, model, optimizer, checkpointer, dataset_builder \
-        = load_model_from_jsonfile(jsonfile, rank)
+        = build_model_from_jsonfile(jsonfile, rank)
     if p.pretrained_model is not None:
         p2, pretrained_model, _, _, _ \
-            = load_model_from_jsonfile(p.pretrained_model, rank)
+            = build_model_from_jsonfile(p.pretrained_model, rank)
         model.restore_from_pretrained_model(pretrained_model, p2.model)
 
     # for cmvn
@@ -169,7 +170,8 @@ def train(jsonfile, Solver, rank_size=1, rank=0):
             logging.info(f">>>>> start evaluate in epoch {epoch}")
         dataset = dataset_builder.load_csv(p.dev_csv).as_dataset(p.batch_size)
         loss = solver.evaluate(dataset, epoch)
-        checkpointer(loss)
+        if rank == 0:
+            checkpointer(loss)
 
 
 if __name__ == "__main__":

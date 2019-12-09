@@ -64,6 +64,7 @@ from .utils.learning_rate import (
 from .utils.hparam import HParams
 from .utils.misc import generate_square_subsequent_mask
 from .utils.misc import get_wave_file_length
+from .utils.misc import set_default_summary_writer
 
 # tools
 from .tools.beam_search import BeamSearchDecoder

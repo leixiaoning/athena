@@ -40,22 +40,16 @@ class Checkpoint(tf.train.Checkpoint):
         for epoch in dataset:
             ckpt()
     """
-    def __init__(self, checkpoint_directory=None, summary_directory=None, rank=0, **kwargs):
+    def __init__(self, checkpoint_directory=None, **kwargs):
         super().__init__(**kwargs)
-        self.rank = rank
         self.best_loss = np.inf
         if checkpoint_directory is None:
-            checkpoint_directory = os.path.join(os.path.expanduser("~"), ".ailabs")
+            checkpoint_directory = os.path.join(os.path.expanduser("~"), ".athena")
         self.checkpoint_prefix = os.path.join(checkpoint_directory, "ckpt")
         self.checkpoint_directory = checkpoint_directory
         logging.info("trying to restore from : %s" % checkpoint_directory)
         # load from checkpoint if previous models exist in checkpoint dir
         self.restore(tf.train.latest_checkpoint(checkpoint_directory))
-        if summary_directory is None:
-            summary_directory = os.path.join(checkpoint_directory, "event")
-        if self.rank == 0:
-            writer = tf.summary.create_file_writer(summary_directory)
-            writer.set_as_default()
 
     def _compare_and_save_best(self, loss, save_path):
         """ compare and save the best model in best_loss """
@@ -67,10 +61,9 @@ class Checkpoint(tf.train.Checkpoint):
                 wf.write('model_checkpoint_path: "%s"' % checkpoint)
 
     def __call__(self, loss=None):
-        if self.rank == 0:
-            logging.info("saving model in :%s" % self.checkpoint_prefix)
-            save_path = self.save(file_prefix=self.checkpoint_prefix)
-            self._compare_and_save_best(loss, save_path)
+        logging.info("saving model in :%s" % self.checkpoint_prefix)
+        save_path = self.save(file_prefix=self.checkpoint_prefix)
+        self._compare_and_save_best(loss, save_path)
 
     def restore_from_best(self):
         """ restore from the best model """
