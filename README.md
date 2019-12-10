@@ -38,6 +38,75 @@ python -m pip install --ignore-installed dist/athena-0.1.0*.whl
 source ./tools/env.sh
 ```
 
+## Directory Structure
+
+Below is the basic directory structure for Athena
+```bash
+|-- Athena
+|   |-- data  # - root directory for input-related operations
+|   |   |-- datasets  # custom datasets for ASR and pretraining 
+|   |   |-- feature_normalizer.py
+|   |   |-- text_featurizer.py
+|   |-- decode_main.py  # entry point for decoding
+|   |-- horovod_main.py  # entry point for multi-gpu training
+|   |-- layers
+|   |   |-- attention.py
+|   |   |-- commons.py  # common operations for every layer
+|   |   |-- functional.py  # specific operations for ASR and pretraining
+|   |   |-- transformer.py
+|   |-- loss.py
+|   |-- main.py
+|   |-- metrics.py
+|   |-- models
+|   |   |-- base.py  # base class for models, all other models inherites BaseModel
+|   |   |-- deep_speech.py  # implementation of Deep Speech
+|   |   |-- masked_pc.py  # implementation of Masked-Predictive-Coding
+|   |   |-- mtl_seq2seq.py  # multi-task model with attention-based loss and CTC loss
+|   |   |-- speech_transformer.py  # transformer-based model for ASR
+|   |-- solver.py
+|   |-- tools  # contains various tools for decoding
+|   |   |-- beam_search.py
+|   |   |-- ctc_scorer.py  # CTC-joint decoding
+|   |   |-- lm_scorer.py
+|   |-- transform  # custom featureizer based on C++
+|   |   |-- audio_featurizer.py
+|   |   |-- feats  # supports various operations like extracting FBank, Pitch features and speed perbutation
+|   |-- utils
+|       |-- __init__.py
+|       |-- checkpoint.py
+|       |-- data_queue.py
+|       |-- hparam.py
+|       |-- hparam_test.py
+|       |-- learning_rate.py
+|       |-- metric_check.py
+|       |-- misc.py
+|       |-- vocabs
+
+|-- docs
+|   |-- README.md
+|   |-- TheTrainningEfficiency.md
+|   |-- development
+|   |    |-- contributing.md
+|   |-- transform
+
+|-- examples  # example scripts for ASR, TTS, etc
+|   |-- asr  # each subdirectory contains a data preparation scripts and a run script for the task
+|       |-- aishell
+|       |-- hkust
+|       |-- librispeech
+|       |-- switchboard_fisher
+
+|-- tools  # need to source env.sh before training
+    |-- env.sh
+    |-- install.sh
+
+|-- requirements.txt
+|-- setup.py
+|-- CONTRIBUTING.md
+|-- LICENSE
+|-- README.md
+```
+
 ## Data Preparation
 
 ### Create Manifest

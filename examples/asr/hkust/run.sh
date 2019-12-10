@@ -20,7 +20,6 @@ if [ "athena" != "$current_dir" ]; then
     exit 1
 fi
 
-source /tmp-data/tools/env/tf2.0_py3.6_all_luban.env
 source tools/env.sh
 
 stage=0
@@ -37,7 +36,15 @@ if [ ${stage} -le 1 ] && [ ${stop_stage} -ge 1 ]; then
 fi
 
 if [ ${stage} -le 2 ] && [ ${stop_stage} -ge 2 ]; then
+    # finetuning with smaller learning rate, we need to change a couple configurations here
+    sed -E 's/  \"num_epochs\"\:9\,/  \"num_epochs\"\:3\,/g' examples/asr/hkust/mtl_transformer.json > examples/asr/hkust/mtl_transformer.json
+    sed -E 's/  \"sorta_epoch\"\:2\,/  \"sorta_epoch\"\:0\,/g' examples/asr/hkust/mtl_transformer.json > examples/asr/hkust/mtl_transformer.json
+    sed -E 's/    \"k\"\:0\.5/    \"k\"\:0\.05/g' examples/asr/hkust/mtl_transformer.json > examples/asr/hkust/mtl_transformer.json
+    python athena/main.py examples/asr/hkust/mtl_transformer.json
+fi
+
+if [ ${stage} -le 3 ] && [ ${stop_stage} -ge 3 ]; then
     # decoding stage
-    python athena/decode_main.py examples/asr/hkust/mtl_transformer_test.json
+    python athena/decode_main.py examples/asr/hkust/mtl_transformer.json
 fi
 
