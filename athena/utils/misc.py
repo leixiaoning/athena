@@ -21,6 +21,7 @@ import wave
 import tensorflow as tf
 from absl import logging
 import numpy as np
+from .hparam import HParams
 
 
 def mask_index_from_labels(labels, index):
@@ -151,3 +152,11 @@ def set_default_summary_writer(summary_directory=None):
         summary_directory = os.path.join(summary_directory, "event")
     writer = tf.summary.create_file_writer(summary_directory)
     writer.set_as_default()
+
+def register_and_parse_hparams(default_config, config=None):
+    hparams = HParams()
+    for keys in default_config:
+        hparams.add_hparam(keys, default_config[keys])
+    if config is not None:
+        hparams.override_from_dict(config)
+    return hparams

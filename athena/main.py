@@ -35,6 +35,7 @@ from athena import (
     SpeechTransformer2,
     MtlTransformerCtc,
     MaskedPredictCoding,
+    ListenAttendSpell
 )
 
 SUPPORTED_DATASET_BUILDER = {
@@ -48,6 +49,7 @@ SUPPORTED_MODEL = {
     "speech_transformer2": SpeechTransformer2,
     "mtl_transformer_ctc": MtlTransformerCtc,
     "mpc": MaskedPredictCoding,
+    "listen_attend_spell": ListenAttendSpell,
 }
 
 SUPPORTED_OPTIMIZER = {
