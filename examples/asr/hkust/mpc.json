@@ -1,6 +1,6 @@
 {
   "batch_size":64,
-  "num_epochs":5,
+  "num_epochs":100,
   "sorta_epoch":1,
   "ckpt":"examples/asr/hkust/ckpts/mpc",
   "solver_gpu":[0],
@@ -20,7 +20,7 @@
     "num_encoder_layers":12,
     "dff":1280,
     "rate":0.1,
-    "chunk_size":6,
+    "chunk_size":1,
     "keep_probability":0.8
   },
 
@@ -39,7 +39,7 @@
       "local_cmvn":false
       },
     "cmvn_file":"examples/asr/hkust/data/cmvn",
-    "input_length_range":[10, 5000]
+    "input_length_range":[10, 8000]
   },
   "train_csv":"/tmp-data/dataset/opensource/hkust/train.csv",
   "dev_csv":"/tmp-data/dataset/opensource/hkust/dev.csv"
