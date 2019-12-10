@@ -61,7 +61,8 @@ class FeatureNormalizer:
             total_num = tf.Variable(0, dtype=tf.int32)
 
             tq_entries = tqdm.tqdm(entries)
-            for (audio_file, _, _, speaker) in tq_entries:
+            for items in tq_entries:
+                audio_file, speaker = items[0], items[-1]
                 if speaker != tar_speaker:
                     continue
                 feat_data = featurizer(audio_file)

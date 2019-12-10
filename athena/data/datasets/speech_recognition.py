@@ -135,7 +135,7 @@ class SpeechRecognitionDatasetBuilder(BaseDatasetBuilder):
 
     def __getitem__(self, index):
         audio_data, _, transcripts, speed, speaker = self.entries[index]
-        feat = self.audio_featurizer(audio_data, speed)
+        feat = self.audio_featurizer(audio_data, speed=speed)
         feat = self.feature_normalizer(feat, speaker)
         feat_length = feat.shape[0]
 
