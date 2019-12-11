@@ -23,7 +23,7 @@ import tensorflow as tf
 from absl import logging
 from athena import SpeechRecognitionDatasetBuilder
 from athena import SpeechDatasetBuilder
-from athena import HParams
+from athena import register_and_parse_hparams
 from athena import BaseSolver
 from athena import WarmUpAdam
 from athena import ExponentialDecayAdam
@@ -79,18 +79,11 @@ DEFAULT_CONFIGS = {
     "decode_config": None,
 }
 
-
-def parse_config(config=None):
-    """ parse json config, use HParams to manage configurations
-    """
-    hparams = HParams()
-    print(config)
-    for keys in DEFAULT_CONFIGS:
-        hparams.add_hparam(keys, DEFAULT_CONFIGS[keys])
-    if config is not None:
-        hparams.override_from_dict(config)
-    return hparams
-
+def parse_config(config):
+    """ parse config """
+    p = register_and_parse_hparams(DEFAULT_CONFIGS, config, cls="main")
+    logging.info("hparams: {}".format(p))
+    return p
 
 def build_model_from_jsonfile(jsonfile, rank=0, pre_run=True):
     """ creates model using configurations in json, load from checkpoint

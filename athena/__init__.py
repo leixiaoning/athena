@@ -61,7 +61,7 @@ from .utils.learning_rate import (
     ExponentialDecayLearningRateSchedule,
     ExponentialDecayAdam,
 )
-from .utils.hparam import HParams
+from .utils.hparam import HParams, register_and_parse_hparams
 from .utils.misc import generate_square_subsequent_mask
 from .utils.misc import get_wave_file_length
 from .utils.misc import set_default_summary_writer

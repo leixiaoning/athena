@@ -20,7 +20,7 @@
 
 import tensorflow as tf
 from absl import logging
-from ..utils import hparam
+from ..utils.hparam import register_and_parse_hparams
 from .base import BaseModel
 from ..loss import CTCLoss
 from ..metrics import CTCAccuracy
@@ -40,12 +40,7 @@ class DeepSpeechModel(BaseModel):
         self.num_classes = num_classes + 1
         self.loss_function = CTCLoss(blank_index=-1)
         self.metric = CTCAccuracy()
-
-        self.hparams = hparam.HParams(cls=self.__class__)
-        for keys in self.default_config:
-            self.hparams.add_hparam(keys, self.default_config[keys])
-        if config is not None:
-            self.hparams.override_from_dict(config)
+        self.hparams = register_and_parse_hparams(self.default_config, config, cls=self.__class__)
 
         layers = tf.keras.layers
         input_feature = layers.Input(shape=sample_shape["input"], dtype=tf.float32)

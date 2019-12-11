@@ -28,7 +28,7 @@ from ..metrics import Seq2SeqSparseCategoricalAccuracy
 from ..utils.misc import generate_square_subsequent_mask, insert_sos_in_labels
 from ..layers.commons import PositionalEncoding
 from ..layers.transformer import Transformer
-from ..utils import hparam
+from ..utils.hparam import register_and_parse_hparams
 from ..tools.beam_search import BeamSearchDecoder
 from ..tools.lm_scorer import NGramScorer
 
@@ -52,11 +52,7 @@ class SpeechTransformer(BaseModel):
 
     def __init__(self, num_classes, sample_shape, config=None):
         super().__init__()
-        self.hparams = hparam.HParams(cls=self.__class__)
-        for keys in self.default_config:
-            self.hparams.add_hparam(keys, self.default_config[keys])
-        if config is not None:
-            self.hparams.override_from_dict(config)
+        self.hparams = register_and_parse_hparams(self.default_config, config, cls=self.__class__)
 
         self.num_classes = num_classes + 1
         self.sos = self.num_classes - 1

@@ -21,7 +21,7 @@ r""" an implementations for MPC
 
 import tensorflow as tf
 from .base import BaseModel
-from ..utils import hparam
+from ..utils.hparam import register_and_parse_hparams
 from ..layers.commons import PositionalEncoding
 from ..layers.transformer import TransformerEncoder, TransformerEncoderLayer
 from ..loss import MPCLoss
@@ -59,11 +59,7 @@ class MaskedPredictCoding(BaseModel):
         self.num_classes = num_classes * self.downsample_scale
 
         # default settings
-        self.hparams = hparam.HParams(cls=self.__class__)
-        for keys in self.default_config:
-            self.hparams.add_hparam(keys, self.default_config[keys])
-        if config is not None:
-            self.hparams.override_from_dict(config)
+        self.hparams = register_and_parse_hparams(self.default_config, config, cls=self.__class__)
 
         # MPC loss fuction and metric
         _, self.dim, self.num_channels = sample_shape["input"].as_list()
