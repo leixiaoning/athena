@@ -15,7 +15,7 @@
 # limitations under the License.
 # ==============================================================================
 # Only support eager mode
-# pylint: disable=too-few-public-methods, no-member, too-many-arguments
+# pylint: disable=too-few-public-methods, no-member, too-many-arguments, unused-argument
 """ learning rate """
 import tensorflow as tf
 from ..utils.hparam import HParams
@@ -35,37 +35,49 @@ class WarmUpLearningSchedule(tf.keras.optimizers.schedules.LearningRateSchedule)
     Idea from the paper: Attention Is All You Need
     """
 
-    def __init__(self, model_dim=512, warmup_steps=4000, k=1.0):
+    def __init__(self, model_dim=512, warmup_steps=4000, k=1.0,
+        decay_steps=99999999, decay_rate=1.0):
         super().__init__()
 
         self.model_dim = tf.cast(model_dim, tf.float32)
         self.warmup_steps = warmup_steps
         self.k = k
+        self.decay_steps = decay_steps
+        self.decay_rate = decay_rate
 
     def __call__(self, step):
         step = tf.cast(step, tf.float32)
         arg1 = tf.math.rsqrt(step)
         arg2 = step * (self.warmup_steps ** -1.5)
+        k = self.k * tf.cast(self.decay_rate ** (step // self.decay_steps), tf.float32)
 
-        return self.k * tf.math.rsqrt(self.model_dim) * tf.math.minimum(arg1, arg2)
+        return k * tf.math.rsqrt(self.model_dim) * tf.math.minimum(arg1, arg2)
 
 
 class WarmUpAdam(tf.keras.optimizers.Adam):
     """WarmUpAdam Implementation """
-
+    default_config = {
+        "d_model": 512,
+        "warmup_steps": 8000,
+        "k": 0.5,
+        "decay_steps": 100000,
+        "decay_rate": 1.0
+    }
     def __init__(self, config=None, beta_1=0.9, beta_2=0.999, epsilon=1e-7,
                  amsgrad=False, name="WarmUpAdam", **kwargs):
         self.hparams = HParams(cls=self.__class__)
-        self.hparams.add_hparam("d_model", 512)
-        self.hparams.add_hparam("warmup_steps", 4000)
-        self.hparams.add_hparam("k", 1.0)
+        for keys in self.default_config:
+            self.hparams.add_hparam(keys, self.default_config[keys])
         if config is not None:
             self.hparams.override_from_dict(config)
-        d_model = self.hparams.d_model
-        warmup_steps = self.hparams.warmup_steps
-        k = self.hparams.k
         super().__init__(
-            learning_rate=WarmUpLearningSchedule(d_model, warmup_steps, k),
+            learning_rate=WarmUpLearningSchedule(
+                self.hparams.d_model,
+                self.hparams.warmup_steps,
+                self.hparams.k,
+                self.hparams.decay_steps,
+                self.hparams.decay_rate
+            ),
             beta_1=beta_1,
             beta_2=beta_2,
             epsilon=epsilon,
