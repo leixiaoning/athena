@@ -1,3 +1,4 @@
+
 # Athena
 
 *Athena* is an open-source implementation of end-to-end Automatic Speech Recognition (ASR) engine. Currently this project supports training and decoding of Connectionist Temporal Classification (CTC) based model, transformer-basesd encoder-decoder model and Hybrid CTC/attention based model, and MPC based unsupervised pretraning.
@@ -19,6 +20,7 @@ All of our models are implemented in Tensorflow>=2.0.0.
     - [Setting the Configuration File](#setting-the-configuration-file)
     - [Train a Model](#train-a-model)
   - [Results](#results)
+  - [Directory Structure](#Directory-Structure)
 
 ## Key Features
 
@@ -36,75 +38,6 @@ pip install -r requirements.txt
 python setup.py bdist_wheel sdist
 python -m pip install --ignore-installed dist/athena-0.1.0*.whl
 source ./tools/env.sh
-```
-
-## Directory Structure
-
-Below is the basic directory structure for Athena
-```bash
-|-- Athena
-|   |-- data  # - root directory for input-related operations
-|   |   |-- datasets  # custom datasets for ASR and pretraining 
-|   |   |-- feature_normalizer.py
-|   |   |-- text_featurizer.py
-|   |-- decode_main.py  # entry point for decoding
-|   |-- horovod_main.py  # entry point for multi-gpu training
-|   |-- layers
-|   |   |-- attention.py
-|   |   |-- commons.py  # common operations for every layer
-|   |   |-- functional.py  # specific operations for ASR and pretraining
-|   |   |-- transformer.py
-|   |-- loss.py
-|   |-- main.py
-|   |-- metrics.py
-|   |-- models
-|   |   |-- base.py  # base class for models, all other models inherites BaseModel
-|   |   |-- deep_speech.py  # implementation of Deep Speech
-|   |   |-- masked_pc.py  # implementation of Masked-Predictive-Coding
-|   |   |-- mtl_seq2seq.py  # multi-task model with attention-based loss and CTC loss
-|   |   |-- speech_transformer.py  # transformer-based model for ASR
-|   |-- solver.py
-|   |-- tools  # contains various tools for decoding
-|   |   |-- beam_search.py
-|   |   |-- ctc_scorer.py  # CTC-joint decoding
-|   |   |-- lm_scorer.py
-|   |-- transform  # custom featureizer based on C++
-|   |   |-- audio_featurizer.py
-|   |   |-- feats  # supports various operations like extracting FBank, Pitch features and speed perbutation
-|   |-- utils
-|       |-- __init__.py
-|       |-- checkpoint.py
-|       |-- data_queue.py
-|       |-- hparam.py
-|       |-- hparam_test.py
-|       |-- learning_rate.py
-|       |-- metric_check.py
-|       |-- misc.py
-|       |-- vocabs
-
-|-- docs
-|   |-- README.md
-|   |-- TheTrainningEfficiency.md
-|   |-- development
-|   |    |-- contributing.md
-|   |-- transform
-
-|-- examples  # example scripts for ASR, TTS, etc
-|   |-- asr  # each subdirectory contains a data preparation scripts and a run script for the task
-|       |-- aishell
-|       |-- hkust
-|       |-- librispeech
-|       |-- switchboard_fisher
-
-|-- tools  # need to source env.sh before training
-    |-- env.sh
-    |-- install.sh
-
-|-- requirements.txt
-|-- setup.py
-|-- CONTRIBUTING.md
-|-- LICENSE
-|-- README.md
 ```
 
 ## Data Preparation
@@ -186,10 +119,10 @@ With all the above preparation done, training becomes straight-forward. `athena/
 
 Please install Horovod and MPI at first, if you want to train model using multi-gpu. See the [Horovod page](https://github.com/horovod/horovod) for more instructions.
 
-To run on a machine with 4 GPUs with Athona:  
+To run on a machine with 4 GPUs with Athona:
 `$ horovodrun -np 4 -H localhost:4 python athena/horovod_main.py <your_config_in_json_file>`
 
-To run on 4 machines with 4 GPUs each with Athena:  
+To run on 4 machines with 4 GPUs each with Athena:
 `$ horovodrun -np 16 -H server1:4,server2:4,server3:4,server4:4 python athena/horovod_main.py <your_config_in_json_file>`
 
 ## Results
@@ -198,3 +131,94 @@ Language  | Model Name | Training Data | Hours of Speech | WER/%
 :-----------: | :------------: | :----------: |  -------: | -------:
 English  | Transformer | [LibriSpeech Dataset](http://www.openslr.org/12/) | 960 h |
 Mandarin | Transformer | HKUST Dataset | 151 h |
+
+
+## Directory Structure
+
+Below is the basic directory structure for Athena
+```bash
+|-- Athena
+|   |-- data  # - root directory for input-related operations
+|   |   |-- datasets  # custom datasets for ASR and pretraining
+|   |   |-- feature_normalizer.py
+|   |   |-- text_featurizer.py
+|   |-- decode_main.py  # entry point for decoding
+|   |-- horovod_main.py  # entry point for multi-gpu training
+|   |-- layers
+|   |   |-- attention.py
+|   |   |-- commons.py  # common operations for every layer
+|   |   |-- functional.py  # specific operations for ASR and pretraining
+|   |   |-- transformer.py
+|   |-- loss.py
+|   |-- main.py
+|   |-- metrics.py
+|   |-- models
+|   |   |-- base.py  # base class for models, all other models inherites BaseModel
+|   |   |-- deep_speech.py  # implementation of Deep Speech
+|   |   |-- masked_pc.py  # implementation of Masked-Predictive-Coding
+|   |   |-- mtl_seq2seq.py  # multi-task model with attention-based loss and CTC loss
+|   |   |-- speech_transformer.py  # transformer-based model for ASR
+|   |-- solver.py
+|   |-- tools  # contains various tools for decoding
+|   |   |-- beam_search.py
+|   |   |-- ctc_scorer.py  # CTC-joint decoding
+|   |   |-- lm_scorer.py
+|   |-- transform  # custom featureizer based on C++
+|   |   |-- audio_featurizer.py
+|   |   |-- feats
+|   |       |-- __init__.py
+|   |       |-- base_frontend.py  # base class for featureizer
+|   |       |-- cmvn.py  # compute and apply global mean and variance for speech features, support speaker-based cmvn
+|   |       |-- cmvn_test.py
+|   |       |-- fbank.py
+|   |       |-- fbank_pitch.py  # compute fbank+pitch features
+|   |       |-- fbank_pitch_test.py
+|   |       |-- fbank_test.py
+|   |       |-- framepow.py
+|   |       |-- framepow_test.py
+|   |       |-- mfcc.py
+|   |       |-- mfcc_test.py
+|   |       |-- ops
+|   |       |-- pitch.py
+|   |       |-- pitch_test.py
+|   |       |-- read_wav.py  # tf op for reading wave, accept speed perbutation value as parameter (default 1.0)
+|   |       |-- read_wav_test.py
+|   |       |-- spectrum.py
+|   |       |-- spectrum_test.py
+|   |       |-- write_wav.py
+|   |       |-- write_wav_test.py
+|   |-- utils
+|       |-- __init__.py
+|       |-- checkpoint.py
+|       |-- data_queue.py
+|       |-- hparam.py
+|       |-- hparam_test.py
+|       |-- learning_rate.py
+|       |-- metric_check.py
+|       |-- misc.py
+|       |-- vocabs
+
+|-- docs
+|   |-- README.md
+|   |-- TheTrainningEfficiency.md
+|   |-- development
+|   |    |-- contributing.md
+|   |-- transform
+
+|-- examples  # example scripts for ASR, TTS, etc
+|   |-- asr  # each subdirectory contains a data preparation scripts and a run script for the task
+|       |-- aishell
+|       |-- hkust
+|       |-- librispeech
+|       |-- switchboard_fisher
+
+|-- tools  # need to source env.sh before training
+    |-- env.sh
+    |-- install.sh
+
+|-- requirements.txt
+|-- setup.py
+|-- CONTRIBUTING.md
+|-- LICENSE
+|-- README.md
+```
