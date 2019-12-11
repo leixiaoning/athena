@@ -26,7 +26,7 @@ from .base import BaseModel
 from ..loss import CTCLoss
 from ..metrics import CTCAccuracy
 from .speech_transformer import SpeechTransformer, SpeechTransformer2
-from ..utils import hparam
+from ..utils.hparam import register_and_parse_hparams
 from ..tools.beam_search import BeamSearchDecoder
 from ..tools.ctc_scorer import CTCPrefixScorer
 from ..tools.lm_scorer import NGramScorer
@@ -54,11 +54,7 @@ class MtlTransformerCtc(BaseModel):
         self.sos = self.num_classes - 1
         self.eos = self.num_classes - 1
 
-        self.hparams = hparam.HParams(cls=self.__class__)
-        for keys in self.default_config:
-            self.hparams.add_hparam(keys, self.default_config[keys])
-        if config is not None:
-            self.hparams.override_from_dict(config)
+        self.hparams = register_and_parse_hparams(self.default_config, config, cls=self.__class__)
 
         self.loss_function = CTCLoss(blank_index=-1)
         self.metric = CTCAccuracy()
