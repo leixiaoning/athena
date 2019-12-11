@@ -60,6 +60,7 @@
     "vocab_file":"examples/asr/hkust/data/vocab",
     "input_length_range":[10, 8000]
   },
+  "num_data_threads": 1,
   "train_csv":"/nfs/project/datasets/hkust-processed/train.csv.spk",
   "dev_csv":"/nfs/cold_project/dataset/opensource/hkust/dev.spk.csv",
   "test_csv":"/nfs/cold_project/dataset/opensource/hkust/dev.spk.csv"

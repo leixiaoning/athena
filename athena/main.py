@@ -72,7 +72,7 @@ DEFAULT_CONFIGS = {
     "optimizer_config": None,
     "dataset_builder": "speech_recognition_dataset",
     "dataset_config": None,
-    "force_recompute_cmvn": False,
+    "num_data_threads": 1,
     "train_csv": None,
     "dev_csv": None,
     "test_csv": None,
@@ -156,12 +156,12 @@ def train(jsonfile, Solver, rank_size=1, rank=0):
         dataset_builder.load_csv(p.train_csv).shard(rank_size, rank)
         if epoch >= p.sorta_epoch:
             dataset_builder.batch_wise_shuffle(p.batch_size)
-        dataset = dataset_builder.as_dataset(p.batch_size)
+        dataset = dataset_builder.as_dataset(p.batch_size, p.num_data_threads)
         solver.train(dataset)
 
         if rank == 0:
             logging.info(f">>>>> start evaluate in epoch {epoch}")
-        dataset = dataset_builder.load_csv(p.dev_csv).as_dataset(p.batch_size)
+        dataset = dataset_builder.load_csv(p.dev_csv).as_dataset(p.batch_size, p.num_data_threads)
         loss = solver.evaluate(dataset, epoch)
         if rank == 0:
             checkpointer(loss)

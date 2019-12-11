@@ -194,7 +194,7 @@ class DecoderSolver(BaseSolver):
     default_config = {
         "beam_search":True,
         "beam_size":4,
-        "ctc_weight":0,
+        "ctc_weight":0.0,
         "lm_weight":0.1,
         "lm_path":"examples/asr/hkust/data/lm.bin"
     }
