@@ -62,8 +62,8 @@ class ReadWav(BaseFrontend):
             resample_rate = tf.cast(sample_rate, dtype=tf.float32) * tf.cast(1.0 / speed, dtype=tf.float32)
             speed_data = py_x_ops.speed(tf.squeeze(audio_data * 32768, axis=-1),
                                         tf.cast(sample_rate, dtype=tf.int32),
-                                        tf.cast(resample_rate, dtype=tf.float32),
-                                        lowpass_filter_width=1)
+                                        tf.cast(resample_rate, dtype=tf.int32),
+                                        lowpass_filter_width=5)
             return tf.squeeze(speed_data), tf.cast(sample_rate, dtype=tf.int32)
 
 

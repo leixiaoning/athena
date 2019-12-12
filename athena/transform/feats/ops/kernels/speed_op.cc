@@ -46,21 +46,21 @@ class SpeedOp : public OpKernel {
                 errors::InvalidArgument(
                     "Resample sample_rate should be a scalar tensor, got ",
                     resample_rate_tensor.shape().DebugString(), " instead."));
-    const float sample_rate = static_cast<float>(sample_rate_tensor.scalar<int32>()());
-    const float resample_freq = resample_rate_tensor.scalar<float>()();
+    const int sample_rate = static_cast<int>(sample_rate_tensor.scalar<int32>()());
+    const int resample_freq = static_cast<int>(resample_rate_tensor.scalar<int32>()());
     const float* input_flat = input_tensor.flat<float>().data();
     const int L = input_tensor.dim_size(0);
 
-    lowpass_cutoff_ = resample_freq / 2.0;
-    cls_resample_ = new LinearResample(sample_rate, resample_freq,
-                                         lowpass_cutoff_,
-                                         lowpass_filter_width_);
+    lowpass_cutoff_ = min(resample_freq / 2, sample_rate / 2);
+    LinearResample cls_resample_(sample_rate, resample_freq,
+                                     lowpass_cutoff_,
+                                     lowpass_filter_width_);
     vector<float> waveform(L);
     for (int i = 0; i < L; i++){
         waveform[i] = static_cast<float>(input_flat[i]);
     }
     vector<float> downsampled_wave;
-    cls_resample_->Resample(waveform, false, &downsampled_wave);
+    cls_resample_.Resample(waveform, false, &downsampled_wave);
     int output_length = downsampled_wave.size();
     Tensor* output_tensor = nullptr;
     OP_REQUIRES_OK(context, context->allocate_output(0, TensorShape({1, output_length}),
@@ -71,10 +71,10 @@ class SpeedOp : public OpKernel {
 
     std::vector<float>().swap(downsampled_wave);
     std::vector<float>().swap(waveform);
+    cls_resample_.Reset();
    }
 
  private:
-  LinearResample *cls_resample_;
   float lowpass_cutoff_;
   int lowpass_filter_width_;
 };

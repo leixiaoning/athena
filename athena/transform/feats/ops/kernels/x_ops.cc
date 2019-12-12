@@ -198,7 +198,7 @@ REGISTER_OP("Pitch")
 REGISTER_OP("Speed")
     .Input("input_data: float")
     .Input("sample_rate: int32")
-    .Input("resample_freq: float")
+    .Input("resample_freq: int32")
     .Attr("lowpass_filter_width: int = 1")
     .Output("output: float")
     .SetShapeFn([](::tensorflow::shape_inference::InferenceContext* c){
