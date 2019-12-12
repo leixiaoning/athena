@@ -29,7 +29,7 @@ from ..metrics import Seq2SeqSparseCategoricalAccuracy
 from ..layers.attention_decoder import AttentionDecoder
 from ..layers.commons import SUPPORTED_RNNS
 from ..utils.misc import insert_sos_in_labels
-from ..utils.misc import register_and_parse_hparams
+from ..utils.hparam import register_and_parse_hparams
 
 #pylint: disable=abstract-method, no-member, too-many-instance-attributes
 class ListenAttendSpell(BaseModel):
@@ -49,7 +49,7 @@ class ListenAttendSpell(BaseModel):
         self.num_classes = num_classes + 1
         self.sos = num_classes
         self.eos = num_classes
-        self.hparams = register_and_parse_hparams(self.default_config, config)
+        self.hparams = register_and_parse_hparams(self.default_config, config, cls=self.__class__)
         p = self.hparams
         self.loss_function = Seq2SeqSparseCategoricalCrossentropy(
             num_classes=self.num_classes,
