@@ -1,4 +1,4 @@
-# Copyright (C) 2017 Beijing Didi Infinity Technology and Development Co.,Ltd.
+# Copyright (C) ATHENA AUTHORS
 # All rights reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -52,11 +52,11 @@ with open("README.md", "r") as fh:
         name="athena",
         version="0.1.0",
         author="ATHENA AUTHORS",
-        author_email="didi@didi.com",
+        author_email="athena@gmail.com",
         description="for speech recognition",
         long_description=long_description,
         long_description_content_type="text/markdown",
-        url="https://git.xiaojukeji.com/speech/athena",
+        url="https://github.com/didichuxing/athena",
         packages=setuptools.find_packages(),
         package_data={"": ["x_ops*.so", "*.vocab", "sph2pipe"]},
         exclude_package_data={"feats": ["*_test*"]},

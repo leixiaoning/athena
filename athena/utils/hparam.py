@@ -684,3 +684,12 @@ class HParams(object):
         for key, val in hp.values().items():
             if key != "cls":
                 self.add_hparam(key, val)
+
+def register_and_parse_hparams(default_config: dict, config=None, **kwargs):
+    """ register default config and parse"""
+    hparams = HParams(**kwargs)
+    for keys in default_config:
+        hparams.add_hparam(keys, default_config[keys])
+    if config is not None:
+        hparams.override_from_dict(config)
+    return hparams

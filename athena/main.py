@@ -23,7 +23,7 @@ import tensorflow as tf
 from absl import logging
 from athena import SpeechRecognitionDatasetBuilder
 from athena import SpeechDatasetBuilder
-from athena import HParams
+from athena import register_and_parse_hparams
 from athena import BaseSolver
 from athena import WarmUpAdam
 from athena import ExponentialDecayAdam
@@ -74,25 +74,18 @@ DEFAULT_CONFIGS = {
     "optimizer_config": None,
     "dataset_builder": "speech_recognition_dataset",
     "dataset_config": None,
-    "force_recompute_cmvn": False,
+    "num_data_threads": 1,
     "train_csv": None,
     "dev_csv": None,
     "test_csv": None,
     "decode_config": None,
 }
 
-
-def parse_config(config=None):
-    """ parse json config, use HParams to manage configurations
-    """
-    hparams = HParams()
-    print(config)
-    for keys in DEFAULT_CONFIGS:
-        hparams.add_hparam(keys, DEFAULT_CONFIGS[keys])
-    if config is not None:
-        hparams.override_from_dict(config)
-    return hparams
-
+def parse_config(config):
+    """ parse config """
+    p = register_and_parse_hparams(DEFAULT_CONFIGS, config, cls="main")
+    logging.info("hparams: {}".format(p))
+    return p
 
 def build_model_from_jsonfile(jsonfile, rank=0, pre_run=True):
     """ creates model using configurations in json, load from checkpoint
@@ -165,12 +158,12 @@ def train(jsonfile, Solver, rank_size=1, rank=0):
         dataset_builder.load_csv(p.train_csv).shard(rank_size, rank)
         if epoch >= p.sorta_epoch:
             dataset_builder.batch_wise_shuffle(p.batch_size)
-        dataset = dataset_builder.as_dataset(p.batch_size)
+        dataset = dataset_builder.as_dataset(p.batch_size, p.num_data_threads)
         solver.train(dataset)
 
         if rank == 0:
             logging.info(f">>>>> start evaluate in epoch {epoch}")
-        dataset = dataset_builder.load_csv(p.dev_csv).as_dataset(p.batch_size)
+        dataset = dataset_builder.load_csv(p.dev_csv).as_dataset(p.batch_size, p.num_data_threads)
         loss = solver.evaluate(dataset, epoch)
         if rank == 0:
             checkpointer(loss)

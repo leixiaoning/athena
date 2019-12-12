@@ -21,7 +21,7 @@ import os
 from absl import logging
 import tensorflow as tf
 from athena.transform import AudioFeaturizer
-from athena.utils import hparam
+from ...utils.hparam import register_and_parse_hparams
 from ..text_featurizer import TextFeaturizer
 from ..text_featurizer import SentencePieceFeaturizer
 from ..feature_normalizer import FeatureNormalizer
@@ -63,11 +63,8 @@ class SpeechRecognitionDatasetBuilder(BaseDatasetBuilder):
     def __init__(self, config=None):
         super().__init__()
         # hparams
-        self.hparams = hparam.HParams(cls=self.__class__)
-        for keys in self.default_config:
-            self.hparams.add_hparam(keys, self.default_config[keys])
-        if config is not None:
-            self.hparams.override_from_dict(config)
+        self.hparams = register_and_parse_hparams(
+            self.default_config, config, cls=self.__class__)
         logging.info("hparams: {}".format(self.hparams))
 
         self.audio_featurizer = AudioFeaturizer(self.hparams.audio_config)
