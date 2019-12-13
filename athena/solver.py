@@ -104,6 +104,7 @@ class BaseSolver(tf.keras.Model):
 
     def evaluate(self, dataset, epoch):
         """ evaluate the model """
+        loss_metric = tf.keras.metrics.Mean(name="AverageLoss")
         loss, metrics = None, None
         evaluate_step = self.evaluate_step
         if self.hparams.enable_tf_function:
@@ -115,9 +116,10 @@ class BaseSolver(tf.keras.Model):
             loss, metrics = evaluate_step(samples)
             if batch % self.hparams.log_interval == 0:
                 logging.info(self.metric_checker(loss, metrics, -2))
-        logging.info(self.metric_checker(loss, metrics, evaluate_epoch=epoch))
+            loss_metric.update_state(loss)
+        logging.info(self.metric_checker(loss_metric.result(), metrics, evaluate_epoch=epoch))
         self.model.reset_metrics()
-        return loss
+        return loss_metric.result()
 
 class HorovodSolver(BaseSolver):
     """ A multi-processer solver based on Horovod """
@@ -171,6 +173,7 @@ class HorovodSolver(BaseSolver):
 
     def evaluate(self, dataset, epoch=0):
         """ evaluate the model """
+        loss_metric = tf.keras.metrics.Mean(name="AverageLoss")
         loss, metrics = None, None
         evaluate_step = self.evaluate_step
         if self.hparams.enable_tf_function:
@@ -182,10 +185,11 @@ class HorovodSolver(BaseSolver):
             loss, metrics = evaluate_step(samples)
             if batch % self.hparams.log_interval == 0 and hvd.local_rank() == 0:
                 logging.info(self.metric_checker(loss, metrics, -2))
+            loss_metric.update_state(loss)
         if hvd.local_rank() == 0:
-            logging.info(self.metric_checker(loss, metrics, evaluate_epoch=epoch))
+            logging.info(self.metric_checker(loss_metric.result(), metrics, evaluate_epoch=epoch))
             self.model.reset_metrics()
-        return loss
+        return loss_metric.result()
 
 
 class DecoderSolver(BaseSolver):
