@@ -51,7 +51,7 @@ class MaskedPredictCoding(BaseModel):
         "rate": 0.1,
         "chunk_size": 3,
         "keep_probability": 0.85,
-        "input_dropout_rate": 0.5
+        "input_dropout_rate": 0.0
     }
 
     def __init__(self, num_classes, sample_shape, config=None):
