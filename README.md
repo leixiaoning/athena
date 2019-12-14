@@ -20,7 +20,7 @@ All of our models are implemented in Tensorflow>=2.0.0.
     - [Setting the Configuration File](#setting-the-configuration-file)
     - [Train a Model](#train-a-model)
   - [Results](#results)
-  - [Directory Structure](#Directory-Structure)
+  - [Directory Structure](#directory-structure)
 
 ## Key Features
 
@@ -132,93 +132,27 @@ Language  | Model Name | Training Data | Hours of Speech | WER/%
 English  | Transformer | [LibriSpeech Dataset](http://www.openslr.org/12/) | 960 h |
 Mandarin | Transformer | HKUST Dataset | 151 h |
 
-
 ## Directory Structure
 
 Below is the basic directory structure for Athena
+
 ```bash
 |-- Athena
 |   |-- data  # - root directory for input-related operations
 |   |   |-- datasets  # custom datasets for ASR and pretraining
-|   |   |-- feature_normalizer.py
-|   |   |-- text_featurizer.py
-|   |-- decode_main.py  # entry point for decoding
-|   |-- horovod_main.py  # entry point for multi-gpu training
-|   |-- layers
-|   |   |-- attention.py
-|   |   |-- commons.py  # common operations for every layer
-|   |   |-- functional.py  # specific operations for ASR and pretraining
-|   |   |-- transformer.py
-|   |-- loss.py
-|   |-- main.py
-|   |-- metrics.py
-|   |-- models
-|   |   |-- base.py  # base class for models, all other models inherites BaseModel
-|   |   |-- deep_speech.py  # implementation of Deep Speech
-|   |   |-- masked_pc.py  # implementation of Masked-Predictive-Coding
-|   |   |-- mtl_seq2seq.py  # multi-task model with attention-based loss and CTC loss
-|   |   |-- speech_transformer.py  # transformer-based model for ASR
-|   |-- solver.py
-|   |-- tools  # contains various tools for decoding
-|   |   |-- beam_search.py
-|   |   |-- ctc_scorer.py  # CTC-joint decoding
-|   |   |-- lm_scorer.py
-|   |-- transform  # custom featureizer based on C++
-|   |   |-- audio_featurizer.py
+|   |-- layers  # some layers
+|   |-- models  # some models
+|   |-- tools # contains various tools, e.g. decoding tools
+|   |-- transform # custom featureizer based on C++
 |   |   |-- feats
-|   |       |-- __init__.py
-|   |       |-- base_frontend.py  # base class for featureizer
-|   |       |-- cmvn.py  # compute and apply global mean and variance for speech features, support speaker-based cmvn
-|   |       |-- cmvn_test.py
-|   |       |-- fbank.py
-|   |       |-- fbank_pitch.py  # compute fbank+pitch features
-|   |       |-- fbank_pitch_test.py
-|   |       |-- fbank_test.py
-|   |       |-- framepow.py
-|   |       |-- framepow_test.py
-|   |       |-- mfcc.py
-|   |       |-- mfcc_test.py
-|   |       |-- ops
-|   |       |-- pitch.py
-|   |       |-- pitch_test.py
-|   |       |-- read_wav.py  # tf op for reading wave, accept speed perbutation value as parameter (default 1.0)
-|   |       |-- read_wav_test.py
-|   |       |-- spectrum.py
-|   |       |-- spectrum_test.py
-|   |       |-- write_wav.py
-|   |       |-- write_wav_test.py
-|   |-- utils
-|       |-- __init__.py
-|       |-- checkpoint.py
-|       |-- data_queue.py
-|       |-- hparam.py
-|       |-- hparam_test.py
-|       |-- learning_rate.py
-|       |-- metric_check.py
-|       |-- misc.py
-|       |-- vocabs
-
-|-- docs
-|   |-- README.md
-|   |-- TheTrainningEfficiency.md
-|   |-- development
-|   |    |-- contributing.md
-|   |-- transform
-
+|   |   |   |-- ops # c++ code on tensorflow ops
+|   |-- utils # utils, e.g. checkpoit, learning_rate, metric, etc
+|-- docs  # docs
 |-- examples  # example scripts for ASR, TTS, etc
 |   |-- asr  # each subdirectory contains a data preparation scripts and a run script for the task
 |       |-- aishell
 |       |-- hkust
 |       |-- librispeech
 |       |-- switchboard_fisher
-
 |-- tools  # need to source env.sh before training
-    |-- env.sh
-    |-- install.sh
-
-|-- requirements.txt
-|-- setup.py
-|-- CONTRIBUTING.md
-|-- LICENSE
-|-- README.md
 ```

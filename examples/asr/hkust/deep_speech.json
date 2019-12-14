@@ -39,6 +39,7 @@
     "input_length_range":[10, 5000],
     "force_process":false
   },
+  "num_data_threads": 1,
   "dev_csv":"/tmp-data/dataset/opensource/hkust/dev.csv",
   "test_csv":"/tmp-data/dataset/opensource/hkust/dev.csv"
 }
