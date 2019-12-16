@@ -105,7 +105,7 @@ def build_model_from_jsonfile(jsonfile, rank=0, pre_run=True):
         if p.dev_csv is None:
             raise ValueError("we currently need a dev_csv for pre-load")
         dataset = dataset_builder.load_csv(p.dev_csv).as_dataset(p.batch_size)
-        solver.evaluate_step(iter(dataset).next())
+        solver.evaluate_step(model.prepare_samples(iter(dataset).next()))
     if rank == 0:
         set_default_summary_writer(p.summary_dir)
     return p, model, optimizer, checkpointer, dataset_builder
