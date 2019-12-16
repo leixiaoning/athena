@@ -50,7 +50,8 @@ class MaskedPredictCoding(BaseModel):
         "dff": 1280,
         "rate": 0.1,
         "chunk_size": 3,
-        "keep_probability": 0.85
+        "keep_probability": 0.85,
+        "input_dropout_rate": 0.0
     }
 
     def __init__(self, num_classes, sample_shape, config=None):
@@ -122,7 +123,7 @@ class MaskedPredictCoding(BaseModel):
             MPC outputs to fit acoustic features
                 encoder_outputs: Transformer encoder outputs, Tensor, shape is (batch, seqlen, dim)
         """
-        x0 = samples["input"]
+        x0 = tf.nn.dropout(samples["input"], self.hparams.input_dropout_rate)
         x = self.x_net(x0, training=training)
         x = self.encoder(x, None, training=training)
         return self.final_layer(x)
