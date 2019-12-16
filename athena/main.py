@@ -15,27 +15,13 @@
 # limitations under the License.
 # ==============================================================================
 # Only support tensorflow 2.0
-# pylint: disable=invalid-name, no-member
+# pylint: disable=invalid-name, no-member, wildcard-import, unused-wildcard-import
 """ a sample implementation of LAS for HKUST """
 import sys
 import json
 import tensorflow as tf
 from absl import logging
-from athena import SpeechRecognitionDatasetBuilder
-from athena import SpeechDatasetBuilder
-from athena import register_and_parse_hparams
-from athena import BaseSolver
-from athena import WarmUpAdam
-from athena import ExponentialDecayAdam
-from athena import Checkpoint
-from athena import set_default_summary_writer
-from athena import (
-    DeepSpeechModel,
-    SpeechTransformer,
-    SpeechTransformer2,
-    MtlTransformerCtc,
-    MaskedPredictCoding,
-)
+from athena import *
 
 SUPPORTED_DATASET_BUILDER = {
     "speech_recognition_dataset": SpeechRecognitionDatasetBuilder,
