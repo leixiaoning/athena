@@ -60,10 +60,8 @@ def convert_audio_and_split_transcript(directory, subset, out_csv_file):
     out_csv_file: the resulting output csv file
   """
     gfile = tf.compat.v1.gfile
-    sph2pip = os.path.join(os.path.dirname(__file__), "../../tools/sph2pipe")
-    text_featurizer = TextFeaturizer(
-        os.path.join(os.path.dirname(__file__), "../../utils/ch-en.vocab")
-    )
+    sph2pip = os.path.join(os.path.dirname(__file__), "../../../athena/tools/sph2pipe")
+    text_featurizer = TextFeaturizer()
 
     logging.info("Processing audio and transcript for %s" % subset)
     audio_dir = os.path.join(directory, "LDC2005S15/")

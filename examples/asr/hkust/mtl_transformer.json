@@ -57,11 +57,14 @@
       "local_cmvn":false
       },
     "cmvn_file":"examples/asr/hkust/data/cmvn",
-    "vocab_file":"examples/asr/hkust/data/vocab",
+    "text_config": {
+      "type":"vocab",
+      "model":"examples/asr/hkust/data/vocab"
+    },
     "input_length_range":[10, 8000]
   },
   "num_data_threads": 1,
-  "train_csv":"/nfs/project/datasets/hkust-processed/train.csv.spk",
-  "dev_csv":"/nfs/cold_project/dataset/opensource/hkust/dev.spk.csv",
-  "test_csv":"/nfs/cold_project/dataset/opensource/hkust/dev.spk.csv"
+  "train_csv":"examples/asr/hkust/data/train.csv",
+  "dev_csv":"examples/asr/hkust/data/dev.csv",
+  "test_csv":"examples/asr/hkust/data/dev.csv"
 }

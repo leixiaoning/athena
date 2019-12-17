@@ -69,9 +69,10 @@ class DeepSpeechModel(BaseModel):
         rnn_hidden_size = self.hparams.rnn_hidden_size
 
         for _ in range(self.hparams.num_rnn_layers):
-            inner = SUPPORTED_RNNS[rnn_type](
-                rnn_hidden_size,
-                return_sequences=True)(inner)
+            inner = tf.keras.layers.RNN(
+                cell=[SUPPORTED_RNNS[rnn_type](rnn_hidden_size)],
+                return_sequences=True
+            )(inner)
             inner = layers.BatchNormalization()(inner)
         inner = layers.Dense(rnn_hidden_size, activation=tf.nn.relu6)(inner)
         inner = layers.Dense(self.num_classes)(inner)

@@ -17,6 +17,7 @@
 # data
 from .data import SpeechRecognitionDatasetBuilder
 from .data import SpeechDatasetBuilder
+from .data import LanguageDatasetBuilder
 from .data import FeatureNormalizer
 from .data.text_featurizer import TextFeaturizer
 
@@ -44,6 +45,7 @@ from .models.speech_transformer import SpeechTransformer, SpeechTransformer2
 from .models.masked_pc import MaskedPredictCoding
 from .models.deep_speech import DeepSpeechModel
 from .models.mtl_seq2seq import MtlTransformerCtc
+from .models.rnn_lm import RNNLM
 
 # solver & loss & accuracy
 from .solver import BaseSolver

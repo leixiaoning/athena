@@ -57,7 +57,10 @@
       "local_cmvn":false
       },
     "cmvn_file":"examples/asr/hkust/data/cmvn",
-    "vocab_file":"examples/asr/hkust/data/vocab",
+    "text_config": {
+      "type":"vocab",
+      "model":"examples/asr/hkust/data/vocab"
+    },
     "input_length_range":[10, 8000],
     "speed_permutation": [0.9, 1.0, 1.1]
   },

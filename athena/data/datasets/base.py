@@ -140,3 +140,8 @@ class BaseDatasetBuilder:
         shuffled_entries.extend(self.entries[max_buckets * batch_size :])
         self.entries = shuffled_entries
         return self
+
+    # pylint: disable=unused-argument
+    def compute_cmvn_if_necessary(self, is_necessary=True):
+        """ vitural interface """
+        return self

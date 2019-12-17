@@ -22,6 +22,8 @@ import re
 import warnings
 from collections import defaultdict
 import sentencepiece as spm
+import tensorflow as tf
+from ..utils.hparam import register_and_parse_hparams
 
 
 class Vocabulary:
@@ -38,6 +40,11 @@ class Vocabulary:
             vocab_file: Vocabulary file name.
         """
         super().__init__()
+        if vocab_file is not None:
+            self.load_model(vocab_file)
+
+    def load_model(self, vocab_file):
+        """ load model"""
         if vocab_file is None or not os.path.exists(vocab_file):
             warnings.warn(
                 "[Warning] the vocab {} is not exists, make sure you are "
@@ -95,28 +102,18 @@ class Vocabulary:
             raise ValueError("unsupported input")
 
 
-class TextFeaturizer(Vocabulary):
-    """ Text Featurizer """
-
-    def __init__(self, vocab_file):
-        super().__init__(vocab_file)
-        # Default Unicode for python3
-        self.punct_tokens = r"＇｛｝［］＼｜｀～＠＃＄％＾＆＊（）"
-        self.punct_tokens += r"＿＋，。、‘’“”《》？：；【】——~！@"
-        self.punct_tokens += r"￥%……&（）,.?<>:;\[\]|`\!@#$%^&()+?\"/_-"
-
-    def delete_punct(self, tokens):
-        """ delete punctuation tokens """
-        return re.sub("[{}]".format(self.punct_tokens), "", tokens)
-
-
 class SentencePieceFeaturizer:
     """ TODO: docstring """
 
     def __init__(self, spm_file):
         self.unk_index = 0
         self.sp = spm.SentencePieceProcessor()
-        self.sp.Load(spm_file)
+        if spm_file is not None:
+            self.sp.Load(spm_file)
+
+    def load_model(self, model_file):
+        """ load model """
+        self.sp.Load(model_file)
 
     def __len__(self):
         return self.sp.GetPieceSize()
@@ -129,3 +126,77 @@ class SentencePieceFeaturizer:
     def decode(self, ids):
         """Conver a list of ids to a sentence"""
         return self.sp.DecodeIds(ids)
+
+class TextTokenizer:
+    """ Text Tokenizer """
+    def __init__(self, text=None):
+        self.tokenizer = tf.keras.preprocessing.text.Tokenizer()
+        self.text = text
+        if text is not None:
+            self.load_model(text)
+
+    def load_model(self, text):
+        """ load model """
+        self.tokenizer.fit_on_texts(text)
+
+    def __len__(self):
+        return self.tokenizer.num_words + 1
+
+    def encode(self, texts):
+        """Convert a sentence to a list of ids, with special tokens added."""
+        return self.tokenizer.texts_to_sequences([texts])[0]
+
+    def decode(self, sequences):
+        """Conver a list of ids to a sentence"""
+        return self.tokenizer.sequences_to_texts(sequences[0])
+
+
+class TextFeaturizer:
+    """ The main text featurizer interface """
+    supported_model = {
+        "vocab": Vocabulary,
+        "spm": SentencePieceFeaturizer,
+        "text": TextTokenizer
+    }
+    default_config = {
+        "type": "text",
+        "model": None,
+    }
+    #pylint: disable=dangerous-default-value, no-member
+    def __init__(self, config=None):
+        self.p = register_and_parse_hparams(self.default_config, config)
+        self.model = self.supported_model[self.p.type](self.p.model)
+        self.punct_tokens = r"＇｛｝［］＼｜｀～＠＃＄％＾＆＊（）"
+        self.punct_tokens += r"＿＋，。、‘’“”《》？：；【】——~！@"
+        self.punct_tokens += r"￥%……&（）,.?<>:;\[\]|`\!@#$%^&()+?\"/_-"
+
+    def load_model(self, model_file):
+        """ load model """
+        self.model.load_model(model_file)
+
+    @property
+    def model_type(self):
+        """ the model type """
+        return self.p.type
+
+    def delete_punct(self, tokens):
+        """ delete punctuation tokens """
+        return re.sub("[{}]".format(self.punct_tokens), "", tokens)
+
+    def __len__(self):
+        return len(self.model)
+
+    def encode(self, texts):
+        """Convert a sentence to a list of ids, with special tokens added."""
+        return self.model.encode(texts)
+
+    def decode(self, sequences):
+        """Conver a list of ids to a sentence"""
+        return self.model.decode(sequences)
+
+    @property
+    def unk_index(self):
+        """ return the unk index """
+        if self.p.type == "vocab":
+            return self.model.unk_index
+        return -1
