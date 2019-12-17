@@ -2,7 +2,7 @@
   "batch_size":32,
   "num_epochs":100,
   "sorta_epoch":0,
-  "ckpt":"examples/lm/hkust/ckpts/rnnlm",
+  "ckpt":"examples/asr/hkust/ckpts/rnnlm",
 
   "solver_gpu":[0],
   "solver_config":{

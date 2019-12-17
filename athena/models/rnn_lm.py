@@ -48,7 +48,6 @@ class RNNLM(BaseModel):
         )
         self.sos = self.num_classes + p.sos
         self.eos = self.num_classes + p.eos
-        self.loss_function = tf.nn.softmax_cross_entropy_with_logits
         self.metric = tf.keras.metrics.Mean(name="AverageLoss")
 
         layers = tf.keras.layers
