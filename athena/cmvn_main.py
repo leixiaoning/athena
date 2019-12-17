@@ -14,9 +14,23 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
-""" data """
-from .datasets.speech_recognition import SpeechRecognitionDatasetBuilder
-from .datasets.speech_set import SpeechDatasetBuilder
-from .datasets.language_set import LanguageDatasetBuilder
-from .feature_normalizer import FeatureNormalizer
-from .text_featurizer import TextFeaturizer, SentencePieceFeaturizer
+# Only support tensorflow 2.0
+# pylint: disable=invalid-name, no-member
+r""" a sample implementation of LAS for HKUST """
+import sys
+import json
+import tensorflow as tf
+from absl import logging
+from athena.main import parse_config, SUPPORTED_DATASET_BUILDER
+
+if __name__ == "__main__":
+    logging.set_verbosity(logging.INFO)
+    tf.random.set_seed(1)
+
+    jsonfile = sys.argv[1]
+    with open(jsonfile) as file:
+        config = json.load(file)
+    p = parse_config(config)
+    csv_file = sys.argv[2]
+    dataset_builder = SUPPORTED_DATASET_BUILDER[p.dataset_builder](p.dataset_config)
+    dataset_builder.load_csv(csv_file).compute_cmvn_if_necessary(True)

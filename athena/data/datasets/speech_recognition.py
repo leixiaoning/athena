@@ -23,7 +23,6 @@ import tensorflow as tf
 from athena.transform import AudioFeaturizer
 from ...utils.hparam import register_and_parse_hparams
 from ..text_featurizer import TextFeaturizer
-from ..text_featurizer import SentencePieceFeaturizer
 from ..feature_normalizer import FeatureNormalizer
 from .base import BaseDatasetBuilder
 
@@ -51,8 +50,7 @@ class SpeechRecognitionDatasetBuilder(BaseDatasetBuilder):
     """
     default_config = {
         "audio_config": {"type": "Fbank"},
-        "vocab_file": "athena/utils/vocabs/ch-en.vocab",
-        "subword": False,
+        "text_config": {"type":"vocab", "model":"athena/utils/vocabs/ch-en.vocab"},
         "cmvn_file": None,
         "remove_unk": True,
         "input_length_range": [20, 50000],
@@ -69,14 +67,7 @@ class SpeechRecognitionDatasetBuilder(BaseDatasetBuilder):
 
         self.audio_featurizer = AudioFeaturizer(self.hparams.audio_config)
         self.feature_normalizer = FeatureNormalizer(self.hparams.cmvn_file)
-
-        if self.hparams.subword:
-            self.text_featurizer = SentencePieceFeaturizer(self.hparams.vocab_file)
-        else:
-            self.text_featurizer = TextFeaturizer(self.hparams.vocab_file)
-
-        # self.file_path = self.hparams.data_csv
-        # self.preprocess_data()
+        self.text_featurizer = TextFeaturizer(self.hparams.text_config)
 
     def reload_config(self, config):
         """ reload the config """
@@ -97,12 +88,18 @@ class SpeechRecognitionDatasetBuilder(BaseDatasetBuilder):
         if "speakers" not in headers.split("\t"):
             entries = self.entries
             self.entries = []
+            if self.text_featurizer.model_type == "text":
+                _, _, all_transcripts = zip(*entries)
+                self.text_featurizer.load_model(all_transcripts)
             for wav_filename, wav_len, transcripts in entries:
                 self.entries.append(
                     tuple([wav_filename, wav_len, transcripts, "global"])
                 )
             self.speakers.append("global")
         else:
+            if self.text_featurizer.model_type == "text":
+                _, _, all_transcripts, _ = zip(*entries)
+                self.text_featurizer.load_model(all_transcripts)
             for _, _, _, speaker in self.entries:
                 if speaker not in self.speakers:
                     self.speakers.append(speaker)
@@ -204,6 +201,8 @@ class SpeechRecognitionDatasetBuilder(BaseDatasetBuilder):
             return self
         filter_entries = []
         unk = self.text_featurizer.unk_index
+        if unk == -1:
+            return self
         for items in self.entries:
             if unk not in self.text_featurizer.encode(items[2]):
                 filter_entries.append(items)

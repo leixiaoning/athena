@@ -29,19 +29,26 @@ class BaseModel(tf.keras.Model):
 
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
-        self.loss_function = CTCLoss()
-        self.metric = CTCAccuracy()
+        self.loss_function = None
+        self.metric = None
 
     def call(self, samples, training=None):
         """ call model """
         raise NotImplementedError()
 
+    #pylint: disable=not-callable
     def get_loss(self, logits, samples, training=None):
         """ get loss """
-        logit_length = self.compute_logit_length(samples)
-        loss = self.loss_function(logits, samples, logit_length)
-        self.metric(logits, samples, logit_length)
-        metrics = {self.metric.name: self.metric.result()}
+        if self.loss_function is None:
+            loss = 0.0
+        else:
+            logit_length = self.compute_logit_length(samples)
+            loss = self.loss_function(logits, samples, logit_length)
+        if self.metric is None:
+            metrics = {}
+        else:
+            self.metric(logits, samples, logit_length)
+            metrics = {self.metric.name: self.metric.result()}
         return loss, metrics
 
     def compute_logit_length(self, samples):
@@ -50,7 +57,8 @@ class BaseModel(tf.keras.Model):
 
     def reset_metrics(self):
         """ reset the metrics """
-        self.metric.reset_states()
+        if self.metric is not None:
+            self.metric.reset_states()
 
     def prepare_samples(self, samples):
         """ for special data prepare
@@ -66,4 +74,4 @@ class BaseModel(tf.keras.Model):
     def decode(self, samples, hparams):
         """ decode interface
         """
-        raise NotImplementedError("sorry, this model do not support decode")
+        logging.info("sorry, this model do not support decode")

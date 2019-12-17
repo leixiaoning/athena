@@ -93,11 +93,10 @@ class TdnnLayer(tf.keras.layers.Layer):
 
 
 SUPPORTED_RNNS = {
-    "gru": tf.keras.layers.GRU,
-    "lstm": tf.keras.layers.LSTM,
-    "cudnngru": tf.keras.layers.GRU,
-    "cudnnlstm": tf.keras.layers.LSTM,
+    "lstm": tf.keras.layers.LSTMCell,
+    "gru": tf.keras.layers.GRUCell
 }
+
 
 ACTIVATIONS = {
     "relu": tf.nn.relu,

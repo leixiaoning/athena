@@ -26,6 +26,7 @@ from athena import *
 SUPPORTED_DATASET_BUILDER = {
     "speech_recognition_dataset": SpeechRecognitionDatasetBuilder,
     "speech_dataset": SpeechDatasetBuilder,
+    "language_dataset": LanguageDatasetBuilder,
 }
 
 SUPPORTED_MODEL = {
@@ -34,6 +35,7 @@ SUPPORTED_MODEL = {
     "speech_transformer2": SpeechTransformer2,
     "mtl_transformer_ctc": MtlTransformerCtc,
     "mpc": MaskedPredictCoding,
+    "rnnlm": RNNLM
 }
 
 SUPPORTED_OPTIMIZER = {
