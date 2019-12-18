@@ -45,11 +45,12 @@ class Checkpoint(tf.train.Checkpoint):
         self.best_loss = np.inf
         if checkpoint_directory is None:
             checkpoint_directory = os.path.join(os.path.expanduser("~"), ".athena")
-        self.checkpoint_prefix = os.path.join(checkpoint_directory, "ckpt")
+        self.checkpoint_prefix = checkpoint_directory
         self.checkpoint_directory = checkpoint_directory
         logging.info("trying to restore from : %s" % checkpoint_directory)
         # load from checkpoint if previous models exist in checkpoint dir
         self.restore(tf.train.latest_checkpoint(checkpoint_directory))
+        self.ckpt_manager = tf.train.CheckpointManager(self, self.checkpoint_prefix, max_to_keep=5)
 
     def _compare_and_save_best(self, loss, save_path):
         """ compare and save the best model in best_loss """
@@ -63,7 +64,7 @@ class Checkpoint(tf.train.Checkpoint):
 
     def __call__(self, loss=None):
         logging.info("saving model in :%s" % self.checkpoint_prefix)
-        save_path = self.save(file_prefix=self.checkpoint_prefix)
+        save_path = self.ckpt_manager.save()
         self._compare_and_save_best(loss, save_path)
 
     def restore_from_best(self):
