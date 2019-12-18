@@ -69,7 +69,7 @@ class RNNLM(BaseModel):
 
     def save_model(self, path):
         """
-        for saving model and current weight.
+        for saving model and current weight, path is h5 file name, like 'my_model.h5' 
         usage: 
         new_model = tf.keras.models.load_model(path) 
         """
