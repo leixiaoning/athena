@@ -13,15 +13,18 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""The model reads audio sample from wav file."""
 
 import tensorflow as tf
-
 from athena.utils.hparam import HParams
 from athena.transform.feats.base_frontend import BaseFrontend
 from athena.transform.feats.ops import py_x_ops
 
 
 class ReadWav(BaseFrontend):
+    """
+    Read audio sample from wav file, return sample data and sample rate.
+    """
     def __init__(self, config: dict):
         super().__init__(config)
 
@@ -30,7 +33,8 @@ class ReadWav(BaseFrontend):
         """
           Set params.
            :param config: contains one optional parameters: audio_channels(int, default=1).
-           :return: An object of class HParams, which is a set of hyperparameters as name-value pairs.
+           :return: An object of class HParams, which is a set of hyperparameters as
+                    name-value pairs.
            """
         audio_channels = 1
 
@@ -45,13 +49,13 @@ class ReadWav(BaseFrontend):
 
     def call(self, wavfile, speed=1.0):
         """
-    Get audio data and sample rate from a wavfile.
-    :param wavfile: filepath of wav
-           speed: Speed of sample channels wanted (float, default=1.0)
-    :return: 2 values. The first is a Tensor of audio data.
-        The second return value isthe sample rate of the input wav
-        file, which is a tensor with float dtype.
-    """
+        Get audio data and sample rate from a wavfile.
+        :param wavfile: filepath of wav
+               speed: Speed of sample channels wanted (float, default=1.0)
+        :return: 2 values. The first is a Tensor of audio data.
+            The second return value isthe sample rate of the input wav
+            file, which is a tensor with float dtype.
+        """
         p = self.config
         contents = tf.io.read_file(wavfile)
         audio_data, sample_rate = tf.compat.v1.audio.decode_wav(
@@ -69,9 +73,9 @@ class ReadWav(BaseFrontend):
 
 def read_wav(wavfile, audio_channels=1):
     """ read wav from file
-  args: audio_channels = 1
-  returns: tf.squeeze(audio_data * 32768, axis=-1), tf.cast(sample_rate, dtype=tf.int32)
-  """
+    args: audio_channels = 1
+    returns: tf.squeeze(audio_data * 32768, axis=-1), tf.cast(sample_rate, dtype=tf.int32)
+    """
     contents = tf.io.read_file(wavfile)
     audio_data, sample_rate = tf.compat.v1.audio.decode_wav(
         contents, desired_channels=audio_channels

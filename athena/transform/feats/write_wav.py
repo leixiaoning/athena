@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""The model write audio sample to wav file."""
 
 import tensorflow as tf
 from athena.utils.hparam import HParams
@@ -20,6 +21,10 @@ from athena.transform.feats.base_frontend import BaseFrontend
 
 
 class WriteWav(BaseFrontend):
+  """
+  Encode audio data (input) using sample rate (input),
+  return a write wav opration.
+  """
 
   def __init__(self, config: dict):
     super().__init__(config)
@@ -29,7 +34,8 @@ class WriteWav(BaseFrontend):
     """
       Set params.
        :param config: contains one optional parameters:sample_rate(int, default=16000).
-       :return: An object of class HParams, which is a set of hyperparameters as name-value pairs.
+       :return: An object of class HParams, which is a set of hyperparameters as
+                name-value pairs.
        """
 
     sample_rate = 16000
@@ -56,6 +62,6 @@ class WriteWav(BaseFrontend):
       audio_data = tf.cast(audio_data, dtype=tf.float32)
       contents = tf.audio.encode_wav(
           tf.expand_dims(audio_data, 1), tf.cast(sample_rate, dtype=tf.int32))
-      w = tf.io.write_file(filename, contents)
+      w_op = tf.io.write_file(filename, contents)
 
-    return w
+    return w_op

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""The model tests MFCC FE."""
 
 import os
 from pathlib import Path
@@ -26,6 +27,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 class MfccTest(tf.test.TestCase):
+    """
+    MFCC extraction test.
+    """
     def test_mfcc(self):
         wav_path_16k = str(
             Path(os.environ["MAIN_ROOT"]).joinpath("examples/sm1_cln.wav")

@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""The model tests CMVN OP."""
 
 import numpy as np
 import tensorflow as tf
@@ -20,6 +21,9 @@ from athena.transform.feats.cmvn import CMVN
 
 
 class CMVNTest(tf.test.TestCase):
+    """
+    CMVN test.
+    """
     def test_cmvn(self):
         dim = 40
         cmvn = CMVN.params(
