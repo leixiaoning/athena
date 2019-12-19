@@ -27,7 +27,7 @@ stop_stage=100
 
 if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
     # prepare data
-    python examples/asr/hkust/prepare_data.py /nfs/project/datasets/opensource_data/hkust
+    python examples/asr/hkust/local/prepare_data.py /nfs/project/datasets/opensource_data/hkust
     mkdir -p examples/asr/hkust/data
     cp /nfs/project/datasets/opensource_data/hkust/{train,dev}.csv examples/asr/hkust/data/
 
@@ -39,6 +39,7 @@ if [ ${stage} -le 0 ] && [ ${stop_stage} -ge 0 ]; then
     # prepare language model
     tail -n +2 examples/asr/hkust/data/train.csv | cut -f 3 > examples/asr/hkust/data/text
     # tools/kenlm/build/bin/lmplz -o 4 < examples/asr/hkust/data/text > examples/asr/hkust/data/4gram.arpa
+    # TODO: prepare the code for training n-gram model
     tail -n +2 examples/asr/hkust/data/train.csv | awk '{print $3"\t"$3}' > examples/asr/hkust/data/train.trans.csv
     tail -n +2 examples/asr/hkust/data/dev.csv | awk '{print $3"\t"$3}' > examples/asr/hkust/data/dev.trans.csv
 fi

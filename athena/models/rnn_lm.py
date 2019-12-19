@@ -67,6 +67,14 @@ class RNNLM(BaseModel):
         x = insert_sos_in_labels(samples['input'], self.sos)
         return self.rnnlm(x, training=training)
 
+    def save_model(self, path):
+        """
+        for saving model and current weight, path is h5 file name, like 'my_model.h5' 
+        usage: 
+        new_model = tf.keras.models.load_model(path) 
+        """
+        self.rnnlm.save(path)        
+
     def get_loss(self, logits, samples, training=None):
         """ get loss """
         labels = samples['output']

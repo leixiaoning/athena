@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""The model tests spectrum FE."""
 
 import os
 from pathlib import Path
@@ -26,6 +27,9 @@ os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 
 
 class SpectrumTest(tf.test.TestCase):
+    '''
+    Spectum extraction test.
+    '''
     def test_spectrum(self):
         wav_path_16k = str(
             Path(os.environ["MAIN_ROOT"]).joinpath("examples/sm1_cln.wav")
