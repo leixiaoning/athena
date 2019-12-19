@@ -17,6 +17,7 @@
 
 import os
 import sys
+import codecs
 import pandas
 from absl import logging
 
@@ -44,11 +45,11 @@ def convert_audio_and_split_transcript(directory, subset, out_csv_file):
 
     files = []
     char_dict = {}
-    if not gfile.Exists(os.path.join(directory, subset)):
+    if not gfile.Exists(os.path.join(directory, subset)): # not unzip wav yet
         for filename in os.listdir(audio_dir):
             os.system("tar -zxvf " + audio_dir + filename + " -C " + directory)
 
-    with open(os.path.join(trans_dir, "aishell_transcript_v0.8.txt")) as f:
+    with codecs.open(os.path.join(trans_dir, "aishell_transcript_v0.8.txt"), "r", encoding="utf-8") as f:
         for line in f:
             items = line.strip().split(" ")
             wav_filename = items[0]
@@ -60,7 +61,6 @@ def convert_audio_and_split_transcript(directory, subset, out_csv_file):
                 else:
                     char_dict[item] = 0
             files.append((wav_filename + ".wav", labels))
-
     files_size_dict = {}
     output_wav_dir = os.path.join(directory, subset)
 
@@ -74,34 +74,35 @@ def convert_audio_and_split_transcript(directory, subset, out_csv_file):
 
     content = []
     for wav_filename, trans in files:
-        if wav_filename in files_size_dict:
+        if wav_filename in files_size_dict: # wav which has trans is valid
             filesize, subdir = files_size_dict[wav_filename]
             abspath = os.path.join(output_wav_dir, subdir, wav_filename)
-            content.append((abspath, filesize, trans))
+            content.append((abspath, filesize, trans, subdir))
     files = content
 
     # Write to CSV file which contains three columns:
-    # "wav_filename", "wav_length_ms", "transcript".
+    # "wav_filename", "wav_length_ms", "transcript", "speakers".
     df = pandas.DataFrame(
-        data=files, columns=["wav_filename", "wav_length_ms", "transcript"]
+        data=files, columns=["wav_filename", "wav_length_ms", "transcript", "speakers"]
     )
     df.to_csv(out_csv_file, index=False, sep="\t")
     logging.info("Successfully generated csv file {}".format(out_csv_file))
-
 
 def processor(dircetory, subset, force_process):
     """ download and process """
     if subset not in SUBSETS:
         raise ValueError(subset, "is not in AISHELL")
+    if force_process:
+        logging.info("force process is set true")
 
     subset_csv = os.path.join(dircetory, subset + ".csv")
     if not force_process and os.path.exists(subset_csv):
+        logging.info("{} is already exist".format(subset_csv))
         return subset_csv
     logging.info("Processing the AISHELL subset {} in {}".format(subset, dircetory))
     convert_audio_and_split_transcript(dircetory, subset, subset_csv)
     logging.info("Finished processing AISHELL subset {}".format(subset))
     return subset_csv
-
 
 if __name__ == "__main__":
     logging.set_verbosity(logging.INFO)
