@@ -93,11 +93,11 @@ def processor(dircetory, subset, force_process):
     if subset not in SUBSETS:
         raise ValueError(subset, "is not in AISHELL")
     if force_process:
-        logging.info("force process is set true")
+        logging.info("force process is set to be true")
 
     subset_csv = os.path.join(dircetory, subset + ".csv")
     if not force_process and os.path.exists(subset_csv):
-        logging.info("{} is already exist".format(subset_csv))
+        logging.info("{} already exist".format(subset_csv))
         return subset_csv
     logging.info("Processing the AISHELL subset {} in {}".format(subset, dircetory))
     convert_audio_and_split_transcript(dircetory, subset, subset_csv)
