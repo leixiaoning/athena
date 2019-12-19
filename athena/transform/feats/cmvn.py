@@ -13,6 +13,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""This model doed CMVN on features."""
 
 import numpy as np
 
@@ -23,6 +24,9 @@ from athena.transform.feats.base_frontend import BaseFrontend
 
 
 class CMVN(BaseFrontend):
+    """
+    Do CMVN on features.
+    """
     def __init__(self, config: dict):
         super().__init__(config)
 
@@ -67,9 +71,9 @@ class CMVN(BaseFrontend):
 
         return audio_feature
 
-        def dim(self):
-            params = self.config
-            return len(params.global_mean)
+    def dim(self):
+        params = self.config
+        return len(params.global_mean)
 
 
 def compute_cmvn(audio_feature, mean=None, variance=None, local_cmvn=False):

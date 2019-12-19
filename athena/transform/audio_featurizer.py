@@ -13,29 +13,33 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # ==============================================================================
+"""The model provides a general interface for feature extraction."""
 
 import tensorflow as tf
 from athena.transform import feats
 
 
 class AudioFeaturizer:
+    """
+        Interface of audio Features extractions.
+    """
     def __init__(self, config={"type": "Fbank"}):
         """init
-    :param name Feature name, eg fbank, mfcc, plp ...
-    :param config
-    'type': 'ReadWav', 'Fbank', 'Spectrum'
-    The config for fbank
-      'sample_rate' 16000
-      'window_length' 0.025
-      'frame_length' 0.010
-      'upper_frequency_limit' 20
-      'filterbank_channel_count' 40
-    The config for Spectrum
-      'sample_rate' 16000
-      'window_length' 0.025
-      'frame_length' 0.010
-      'output_type' 1
-    """
+        :param name Feature name, eg fbank, mfcc, plp ...
+        :param config
+        'type': 'ReadWav', 'Fbank', 'Spectrum'
+        The config for fbank
+          'sample_rate' 16000
+          'window_length' 0.025
+          'frame_length' 0.010
+          'upper_frequency_limit' 20
+          'filterbank_channel_count' 40
+        The config for Spectrum
+          'sample_rate' 16000
+          'window_length' 0.025
+          'frame_length' 0.010
+          'output_type' 1
+        """
 
         assert "type" in config
 
@@ -47,10 +51,10 @@ class AudioFeaturizer:
 
     def __call__(self, audio=None, sr=None, speed=1.0):
         """extract feature from audo data
-    :param audio data or audio file
-    :sr sample rate
-    :return feature
-    """
+        :param audio data or audio file
+        :sr sample rate
+        :return feature
+        """
 
         if audio is not None and not tf.is_tensor(audio):
             audio = tf.convert_to_tensor(audio)
@@ -62,10 +66,10 @@ class AudioFeaturizer:
     @tf.function
     def __impl(self, audio=None, sr=None, speed=1.0):
         """
-    :param audio data or audio file, a tensor
-    :sr sample rate, a tensor
-    :return feature
-    """
+        :param audio data or audio file, a tensor
+        :sr sample rate, a tensor
+        :return feature
+        """
         if self.name == "ReadWav" or self.name == "CMVN":
             return self.feat(audio, speed)
         elif audio.dtype is tf.string:

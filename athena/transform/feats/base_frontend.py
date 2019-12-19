@@ -26,7 +26,7 @@ class ABCFrontend(metaclass=abc.ABCMeta):
         raise NotImplementedError()
 
     @abc.abstractmethod
-    def call(self, *args, **kwargs):
+    def call(self, *args):
         """ implementation func """
         raise NotImplementedError()
 
@@ -47,9 +47,9 @@ class BaseFrontend(ABCFrontend):
         """ set params """
         raise NotImplementedError()
 
-    def __call__(self, *args, **kwargs):
+    def __call__(self, *args):
         """ call """
-        return self.call(*args, **kwargs)
+        return self.call(*args)
 
     def dim(self):
         return 1
